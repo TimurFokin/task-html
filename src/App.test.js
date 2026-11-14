@@ -5,6 +5,8 @@ beforeAll(async () => {
     browser = await puppeteer.launch({
         headless: true,
         args: ['--no-sandbox'],
+        executablePath:
+            'C:/Program Files/Yandex/YandexBrowser/Application/browser.exe',
     });
 });
 afterAll(async () => {
