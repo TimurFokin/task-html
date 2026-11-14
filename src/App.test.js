@@ -2,11 +2,16 @@ import puppeteer from 'puppeteer';
 import path from 'path';
 let browser;
 beforeAll(async () => {
+    // Если мы на Linux (GitHub Actions), Puppeteer сам скачает браузер.
+    // Если на Windows, используем ваш Яндекс.
+    const isWindows = process.platform === 'win32';
+
     browser = await puppeteer.launch({
         headless: true,
-        args: ['--no-sandbox'],
-        executablePath:
-            'C:/Program Files/Yandex/YandexBrowser/Application/browser.exe',
+        args: ['--no-sandbox', '--disable-setuid-sandbox'], // Добавили флаг для Linux
+        executablePath: isWindows
+            ? 'C:/Program Files/Yandex/YandexBrowser/Application/browser.exe'
+            : undefined, // На Linux путь не указываем, он найдет скачанный
     });
 });
 afterAll(async () => {
