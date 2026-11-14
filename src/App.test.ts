@@ -4,9 +4,16 @@ import path from 'path';
 let browser: Browser;
 
 beforeAll(async () => {
+    // Если мы на Linux (GitHub Actions), Puppeteer сам скачает браузер.
+    // Если на Windows, используем ваш Яндекс.
+    const isWindows = process.platform === 'win32';
+
     browser = await puppeteer.launch({
         headless: true,
-        args: ['--no-sandbox'],
+        args: ['--no-sandbox', '--disable-setuid-sandbox'], // Добавили флаг для Linux
+        executablePath: isWindows
+            ? 'C:/Program Files/Yandex/YandexBrowser/Application/browser.exe'
+            : undefined, // На Linux путь не указываем, он найдет скачанный
     });
 });
 
@@ -32,7 +39,7 @@ describe('HTML', () => {
 
     it('Заголовок первого уровня содержит текст', async () => {
         const textLength = await page.evaluate(
-            () => document.querySelectorAll('h1')[0]?.textContent?.length
+            () => document.querySelectorAll('h1')[0]?.textContent?.length,
         );
 
         expect(textLength).toBeGreaterThan(1);
@@ -48,7 +55,7 @@ describe('HTML', () => {
 
     it('Заголовок второго уровня содержит текст', async () => {
         const textLength = await page.evaluate(
-            () => document.querySelectorAll('h2')[0]?.textContent?.length
+            () => document.querySelectorAll('h2')[0]?.textContent?.length,
         );
 
         expect(textLength).toBeGreaterThan(1);
